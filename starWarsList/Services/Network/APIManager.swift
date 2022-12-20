@@ -9,8 +9,6 @@ import Foundation
 
 final class APIManager {
     
-//    static let shared = APIManager()
-    
     func someFetch<T: Decodable>(type: T.Type,
                                  urlRequest: URLRequest) async throws -> T {
         

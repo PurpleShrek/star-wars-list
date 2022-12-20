@@ -7,36 +7,36 @@
 
 import UIKit
 
-//MARK: - TextField Logic
 extension MainViewController {
-    func connectTextField() {
-        contentView.textField.addTarget(self, action: #selector(textFieldDidBegin), for: .editingDidBegin)
+    func textFieldPrferences() {
+        hideKeyboardWhenTappedAround()
+        contentView.textField?.delegate = self
     }
     
-    @objc func textFieldDidBegin(sender: UITextField!) {
-        print(sender.text)
+    func textFieldEvents() {
+        let textFieldPublisher = contentView.textField?.textPublisher()
+        
+        textFieldPublisher?
+            .receive(on: RunLoop.main)
+            .sink(receiveValue: { [weak self] value in
+                print("UITextField.text changed to: \(value)")
+                self?.viewModel.getSearchResult(value)
+            })
+            .store(in: &bindings)
     }
 }
 
-//MARK: - Keyboard Hide
-extension MainViewController: UITextFieldDelegate {
-    func textFieldsPreferences() {
-        contentView.textField.delegate = self
-//        hideKeyboardWhenTappedAround()
-    }
-}
-
-extension MainViewController: UIGestureRecognizerDelegate {
+extension MainViewController: UIGestureRecognizerDelegate, UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool { //hide keyboard tap return button (не забудь прокинуть делегат в cellForItemAt)
         view.endEditing(true)
         return false
     }
     
-//    func hideKeyboardWhenTappedAround() { //hide keyboard tap on screen (не забудь вызвать метод во ViewDidLoad или другом методе)
-//        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-//        tap.cancelsTouchesInView = true
-//        view.addGestureRecognizer(tap)
-//    }
+    func hideKeyboardWhenTappedAround() { //hide keyboard tap on screen (не забудь вызвать метод во ViewDidLoad или другом методе)
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
     
     @objc func dismissKeyboard() { //hide keyboard tap on screen
         view.endEditing(true)
